@@ -16,3 +16,13 @@ streamlit run dashboards/hyperparameter_app.py
 ```bash
 python run_backtest.py
 ```
+## Run  INTERACTIVE DASHBOARD (Browser)
+```
+python -m streamlit run dashboards/hyperparameter_app.py --server.port 8080 --server.address 0.0.0.0
+```
+## Run DATA VALIDATION
+```
+  head -5 prices.csv
+tail -5 prices.csv
+wc -l prices.csv
+```
