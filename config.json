@@ -1,0 +1,26 @@
+{
+    "data": {
+        "csv_path": "prices.csv",
+        "symbol": "TEST"
+    },
+    "backtest": {
+        "initial_capital": 100000.0,
+        "slippage_bps": 1.0,
+        "commission_per_trade": 1.0
+    },
+    "strategies": {
+        "ma": {
+            "short_window": 10,
+            "long_window": 30
+        },
+        "rsi": {
+            "window": 14,
+            "oversold": 30,
+            "overbought": 70
+        },
+        "volume": {
+            "window": 20,
+            "volume_multiplier": 1.5
+        }
+    }
+}
