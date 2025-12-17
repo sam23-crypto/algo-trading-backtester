@@ -1,139 +1,98 @@
-Here is a compact README you can paste as‑is, with everything set up in one place.
+## What this project is about
 
-Algorithmic Trading Backtester – Indian Stocks (NIFTY, TCS, Reliance, SBI, Airtel)
-This project is a complete mini quant stack: a Python event‑driven backtester plus a Streamlit dashboard for Indian stocks like NIFTY, TCS, RELIANCE, SBI, and Airtel. It downloads real market data via yfinance, runs a moving‑average crossover strategy, and shows performance metrics (Sharpe, drawdown, PnL) and an interactive equity curve.​
+This is an **algorithmic trading backtester + Streamlit dashboard** for **Indian stocks** (NIFTY, TCS, Reliance, SBI, Airtel). It:
 
-1. What it does
-Pulls real Indian stock data (NSE/BSE) from Yahoo Finance into prices.csv as OHLCV.​
+- Runs a **moving‑average crossover strategy** through an event‑driven backtest engine (data handler → strategy → execution → portfolio).  
+- Uses **real OHLCV data** for Indian stocks.  
+- Produces **performance metrics** (cumulative return, annualized return/vol, Sharpe ratio, max drawdown) and an equity curve.  
+- Includes a **dashboard** where you can refresh data, tune parameters, and re‑run the backtest.
 
-Runs an event‑driven backtest engine: data handler → strategy → execution → portfolio.​
+---
 
-Computes a proper performance tear sheet:
+## Where the data comes from
 
-Cumulative return
+All market data is downloaded from **Yahoo Finance** using the Python library **`yfinance`**:
 
-Annualized return & volatility
+- Indian symbols are requested as Yahoo tickers, for example:
+  - `^NSEI` – NIFTY 50 index  
+  - `RELIANCE.NS` – Reliance Industries  
+  - `TCS.NS` – TCS  
+  - `SBIN.NS` – SBI  
+  - `BHARTIARTL.NS` – Airtel  
 
-Sharpe ratio
+The script `download_india_data.py` calls `yfinance.download(...)` for the chosen symbol and writes a CSV file:
 
-Max drawdown​
-
-Exposes everything through a Streamlit dashboard with:
-
-“Refresh data from market” (near real‑time feel using fresh intraday data).​
-
-Strategy sliders (short/long MA).
-
-Portfolio controls (starting cash, fee per unit).
-
-Live‑updating equity curve and JSON stats.
-
-You can use it as a resume‑ready demo or as a base for more advanced strategies.
-
-2. Project structure
-Top level
-
-run_backtest.py – CLI entrypoint: runs a full backtest on prices.csv and prints stats.​
-
-download_india_data.py – downloads Indian stock data via yfinance and writes prices.csv.​
-
-config.json – simple config (kept minimal in this version).
-
-prices.csv – historical / intraday OHLCV data used by the engine and dashboard.​
-
-Backtester core (backtester/)
-
-data_handler.py – loads prices.csv, parses datetime, indexes and sorts the time series.
-
-portfolio.py – tracks cash, position, trades, total fees, and realized PnL.
-
-execution.py – executes orders, applies per‑unit fees, and updates the portfolio.
-
-performance.py – builds a performance summary (Sharpe, max drawdown, etc.).​
-
-engine.py – orchestrates data, strategy, execution, and portfolio into a single backtest run.​
-
-Strategies (strategies/)
-
-ma.py – moving‑average crossover strategy that outputs +1 / 0 / −1 signals from close prices.​
-
-Dashboard (dashboards/)
-
-hyperparameter_app.py – Streamlit app: data preview, “Refresh data from market”, sliders, and visualization.​
-
-3. One‑time setup
-From the project root:
-
-Install dependencies
-
-bash
-pip install -r requirements.txt
-pip install yfinance streamlit
-yfinance is used for real Indian stock data; Streamlit powers the dashboard UI.​​
-
-Choose your market symbol
-
-In download_india_data.py, set one symbol (examples):
-
-^NSEI – NIFTY 50 index
-
-RELIANCE.NS – Reliance Industries
-
-TCS.NS – TCS
-
-SBIN.NS – SBI
-
-BHARTIARTL.NS – Airtel
-
-The script uses yfinance.download(...) to pull historical/intraday data and writes a clean prices.csv with columns:
-datetime, open, high, low, close, volume.​
-
-Generate prices.csv (historical data)
-
-bash
-python download_india_data.py
-After this, prices.csv exists in the repo root with real Indian market data.​
-
-4. How to run everything (backtest + dashboard)
-A) Terminal backtest
-From the project root:
-
-bash
-python run_backtest.py
-You should see a full tear sheet, for example:
+prices.csv # columns: datetime, open, high, low, close, volume
 
 text
+
+Both the **backtester** and the **Streamlit dashboard** read from this `prices.csv` file.
+
+---
+
+## Commands to run (from project root)
+
+Run these in your terminal in this order.
+
+### 1) Install dependencies (one time)
+
+pip install -r requirements.txt
+pip install yfinance streamlit
+
+text
+
+### 2) Download Indian stock data into prices.csv
+
+Edit `download_india_data.py` and set your symbol (for example):
+
+SYMBOL = "RELIANCE.NS" # or "^NSEI", "TCS.NS", "SBIN.NS", "BHARTIARTL.NS"
+
+text
+
+Then run:
+
+python download_india_data.py
+
+text
+
+This will download real Indian market data from Yahoo Finance using `yfinance` and create/overwrite `prices.csv`.
+
+### 3) Run a backtest in the terminal
+
+python run_backtest.py
+
+text
+
+This will:
+
+- Load `prices.csv`  
+- Run the moving‑average strategy through the backtest engine  
+- Print a performance summary and portfolio statistics
+
+You should see something like:
+
 INFO:root:Loaded 1000 bars for TEST
 Performance Summary
--------------------
-cumulative_return: 0.0062
-annualized_return: 0.0016
-annualized_vol: 0.0052
-sharpe_ratio: 0.3033
-max_drawdown: -0.0167
+cumulative_return: ...
+annualized_return: ...
+annualized_vol: ...
+sharpe_ratio: ...
+max_drawdown: ...
 Backtest complete!
-Portfolio stats: {'total_trades': ..., 'total_fees': ..., 'realized_pnl': ...}
-This confirms the complete pipeline (data → strategy → execution → portfolio → performance) is working.​
+Portfolio stats: {...}
 
-B) Streamlit dashboard (near real‑time)
-From the project root:
+text
 
-bash
+### 4) Start the Streamlit dashboard
+
 python -m streamlit run dashboards/hyperparameter_app.py --server.port 8080 --server.address 0.0.0.0
+
+text
+
 Then:
 
-Open the browser URL (e.g., in Codespaces: Ports → 8080 → globe icon).​​
-
-In the sidebar:
-
-Click “Refresh data from market” to fetch the latest intraday OHLCV for your chosen symbol via yfinance and update prices.csv.​
-
-Adjust Short MA and Long MA windows, starting cash, and fee per unit.
-
-Click “Run Backtest” to:
-
-Run the same engine on the latest prices.csv.
-
-See the updated equity curve and portfolio stats instantly.
-
-Every time you hit “Refresh data from market” + “Run Backtest”, you are effectively doing a fresh backtest on the newest intraday data, giving a near real‑time trading dashboard feel.
+- Open the URL that Streamlit prints (for Codespaces use Ports → 8080 → globe icon).  
+- In the sidebar:
+  - Click **“Refresh data from market”** to pull the latest intraday data for your symbol and update `prices.csv`.  
+  - Adjust **short/long MA windows**, starting cash, and fee per unit.  
+- Click **“Run Backtest”** to execute the engine on the updated `prices.csv` and see the new equity curve + stats.
