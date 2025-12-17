@@ -13,7 +13,7 @@ class DataHandler:
         logging.info(f"Loaded {self.bars_total} bars for {symbol}")
 
     def _load_data(self, csv_path: str) -> pd.DataFrame:
-        df = pd.read_csv(csv_path, parse_dates=[\'datetime\'])
+        df = pd.read_csv(csv_path, parse_dates=["datetime"])
         df.set_index(\'datetime\', inplace=True)
         df.sort_index(inplace=True)
         return df
